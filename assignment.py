@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 @st.cache_data
 def load_data():
     # Replace 'your_data.csv' with your CSV file path
-    data = pd.read_csv("C:/Users/user/Desktop/All Countries.csv")
+    data = pd.read_csv("All Countries.csv")
     return data
 
 
