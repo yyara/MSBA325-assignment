@@ -1,6 +1,6 @@
--streamlit
+streamlit
 pandas
 folium
-streamlit_folium 
+streamlit-folium 
 plotly
-matplotlib.pyplot 
+matplotlib
