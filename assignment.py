@@ -45,7 +45,7 @@ st.markdown("""
 st.title("Suicide Rates by Location Map")
 st.markdown("""
     This interactive map visualizes suicide rates across different countries.
-    Use the slider to filter by suicide rate range and the search box to find specific countries or regions.
+    \nUse the slider to filter by suicide rate range and the search box to find specific countries or regions.
     Or directly type the name of the country you are interested in.
     The markers' colors represent different suicide rate levels.
     """
