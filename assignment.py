@@ -5,34 +5,60 @@ from streamlit_folium import st_folium
 import plotly.express as px
 import matplotlib.pyplot as plt
 
-
+# Load data function (same as in your code)
 @st.cache_data
 def load_data():
-    # Replace 'your_data.csv' with your CSV file path
     data = pd.read_csv("All Countries.csv")
     return data
 
-
+# Load data
 data = load_data()
 
-background_image = "map.jpg"  # Adjust the path to your image file
+# Background Image
+background_image = "map.jpg"
 st.image(background_image, use_column_width=True)
 
 
-# Streamlit app title
+# Explanation about the Dataset
+st.title("About the Dataset")
+st.markdown("""
+    The chosen dataset contains information about various countries and includes the following columns:
+
+    - **Currency**: Currency used in the country.
+    - **Capital City**: Capital city of the country.
+    - **GDP**: Gross domestic product of the country.
+    - **Continent**: Continent where the country is located.
+    - **Latitude**: Geographic latitude coordinate.
+    - **Longitude**: Geographic longitude coordinate.
+    - **Agricultural Land**: Percentage of land used for agriculture.
+    - **Forest Area**: Percentage of land covered by forests.
+    - **Land Area**: Total land area of the country.
+    - **Population**: Total land area of the country.
+    - ... (and more columns with various economic, social, and environmental data)
+
+    I chose a few of these information to display them in the visualizations below.
+    """
+)
+
+
+# Introduction and Explanation for Map Visualization
 st.title("Suicide Rates by Location Map")
+st.markdown("""
+    This interactive map visualizes suicide rates across different countries.
+    Use the slider to filter by suicide rate range and the search box to find specific countries or regions.
+    The markers' colors represent different suicide rate levels.
+    """
+)
 
-# Add a slider to filter by suicide rate range
-min_rate, max_rate = st.slider(
-    "Filter by Suicide Rate Range", 0.0, 50.0, (0.0, 50.0))
+# Slider to Filter Suicide Rate Range
+min_rate, max_rate = st.slider("Filter by Suicide Rate Range", 0.0, 50.0, (0.0, 50.0))
 
-# Add a search box to find specific countries or regions
+# Search Box for Specific Countries or Regions
 search_term = st.text_input("Search for a Country or Region")
 
-# Create a Folium map centered on a specific location
+# Create Folium Map and Add Markers
 m = folium.Map(location=[0, 0], zoom_start=2)
 
-# Loop through your dataset to add markers for each location
 for index, row in data.iterrows():
     suicide_rate = row["suicide_rate"]
     lat = row["latitude"]
@@ -64,7 +90,7 @@ for index, row in data.iterrows():
                 fill_opacity=0.7,
             ).add_to(m)
 
-# Add a styled legend on the right side of the map
+# Legend Explanation
 legend_html = """
     <div style="
         position: absolute;
@@ -85,26 +111,26 @@ legend_html = """
 """
 st.markdown(legend_html, unsafe_allow_html=True)
 
-# Display the map using Streamlit
+# Display the Folium Map
 st_folium(m, width=800, height=400)
 
-
-# Streamlit app title
+# Explanation for Gender Composition Visualization
 st.title('Gender Composition by Country')
+st.markdown("""
+    This chart illustrates the gender composition in the selected country.
+    Choose a country from the dropdown menu to see the distribution of female and male populations.
+    """
+)
 
-# Create a dropdown menu to select a country
+# Dropdown for Selecting Country
 selected_country = st.selectbox('Select a Country:', data['country'].unique())
 
-# Filter the dataset based on the selected country
+# Filter the dataset and Create Bar Chart
 filtered_data = data[data['country'] == selected_country]
-
-# Check if the selected country exists in the dataset
 if len(filtered_data) == 0:
     st.warning(f'No data available for {selected_country}')
 else:
-    # Calculate gender composition
-    total_population = filtered_data['population_female'] + \
-        filtered_data['population_male']
+    total_population = filtered_data['population_female'] + filtered_data['population_male']
     gender_composition = {
         'Gender': ['Female', 'Male'],
         'Population': [filtered_data['population_female'].values[0], filtered_data['population_male'].values[0]]
@@ -125,25 +151,24 @@ else:
     # Display the bar chart
     st.plotly_chart(fig)
 
-# Streamlit app title
+# Explanation for Land Use Comparison Visualization
 st.title('Land Use Comparison by Country')
+st.markdown("""
+    This pie chart displays the land use composition in the selected country.
+    Select a country from the dropdown menu to see the distribution of agricultural land, forest area, urban land, and rural land.
+    """
+)
 
-# Create a dropdown menu to select a country
-selected_country = st.selectbox(
-    'Select a Country:', data['country'].unique(), key='country_select')
+# Dropdown for Selecting Country
+selected_country = st.selectbox('Select a Country:', data['country'].unique(), key='country_select')
 
-# Filter the dataset based on the selected country
+# Filter the dataset and Create Pie Chart
 filtered_data = data[data['country'] == selected_country]
-
-# Check if the selected country exists in the dataset
 if len(filtered_data) == 0:
     st.warning(f'No data available for {selected_country}')
 else:
-    # Calculate land use percentages
-    land_use_columns = ['agricultural_land',
-                        'forest_area', 'urban_land', 'rural_land']
-    land_use_percentages = [filtered_data[use].values[0]
-                            for use in land_use_columns]
+    land_use_columns = ['agricultural_land', 'forest_area', 'urban_land', 'rural_land']
+    land_use_percentages = [filtered_data[use].values[0] for use in land_use_columns]
 
     # Define custom colors for the pie chart segments
     colors = ['#ff9999', '#66b3ff', '#99ff99', '#c2c2f0']
@@ -154,10 +179,8 @@ else:
         land_use_percentages, labels=None, autopct='%1.1f%%', startangle=140, colors=colors)
 
     # Create a custom legend using the same colors
-    legend_labels = ['Agricultural Land',
-                     'Forest Area', 'Urban Land', 'Rural Land']
-    custom_legend = '<br>'.join(
-        [f'<font color="{color}">&#9608; {lbl}</font>' for lbl, color in zip(legend_labels, colors)])
+    legend_labels = ['Agricultural Land', 'Forest Area', 'Urban Land', 'Rural Land']
+    custom_legend = '<br>'.join([f'<font color="{color}">&#9608; {lbl}</font>' for lbl, color in zip(legend_labels, colors)])
     st.markdown(custom_legend, unsafe_allow_html=True)
 
     ax.set_title(f'Land Use Composition in {selected_country}')
